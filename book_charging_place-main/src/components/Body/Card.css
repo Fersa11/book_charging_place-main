@@ -1,0 +1,120 @@
+.Card {
+  width: 220px;
+  height: 430px !important;
+  background-color: #343a40 !important;
+  background-image: url("https://www.transparenttextures.com/patterns/ps-neutral.png");
+  margin: 30px;
+  border-radius: 4%;
+}
+
+.Cardheader {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  border-color: white !important;
+}
+
+.Parkingicon {
+  background-color: #1162b1;
+  color: white;
+  font-size: 60px !important;
+  border-radius: 20% !important;
+}
+
+.Parkingslotname {
+  padding: 0px 30px 0px 30px;
+  font-size: 40px !important;
+  color: white !important;
+  font-weight: bold;
+}
+/********************Start Card Body*******************************/
+.Cardbody {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.75fr;
+  grid-template-rows: 1fr 1fr 1fr 0.5fr 0.5fr 1fr;
+  gap: 15px 0px;
+}
+
+/* Input Icon */
+.Inputgroupicon {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0% !important;
+  border: none !important;
+  background-color: #1162b1 !important;
+  color: #0dcaf0 !important;
+}
+
+#Icon_name {
+  grid-row: 1/2;
+}
+
+#Icon_duration {
+  grid-row: 2/3;
+}
+
+.Formcontrol {
+  background-color: #1162b1 !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0% !important;
+  border: none !important;
+  grid-column: 2/5;
+}
+
+/* ::-webkit-input-placeholder {
+  color: white !important;
+} */
+
+/* input:focus {
+  color: #0dcaf0 !important;
+} */
+
+#Inputform_name {
+  grid-row: 1/2;
+  -webkit-text-fill-color: white;
+}
+
+#Inputform_duration {
+  grid-row: 2/3;
+  -webkit-text-fill-color: white;
+  z-index: 2;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  background: none;
+  width: 170px;
+  height: 30px;
+  position: absolute;
+  left: 5%;
+}
+
+.Custombutton {
+  grid-column: 1/5;
+  grid-row: 3/4;
+}
+
+.Label_remainingtime {
+  grid-row: 4/5;
+  grid-column: 1/5;
+  flex-wrap: nowrap;
+  color: white;
+  margin-bottom: 0;
+  /* align-self: center;
+  justify-self: start; */
+}
+
+.Remainingtime {
+  grid-row: 5/6;
+  grid-column: 1/5;
+  flex-wrap: nowrap;
+  color: white;
+  /* align-self: center;
+  justify-self: start; */
+}
+
+.Buttonswitch {
+  grid-column: 1/5 !important;
+  grid-row: 6/7;
+}
+label {
+  color: red !important;
+}

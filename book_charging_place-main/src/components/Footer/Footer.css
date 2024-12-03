@@ -1,0 +1,75 @@
+footer {
+  background: #343a40;
+  height: 40px;
+
+  bottom: 0px !important;
+  position: fixed;
+  /* width: 50%; */
+  /* display: flex; */
+  width: 100%;
+}
+
+.Copyright {
+  /* grid-row: 1/2;
+  grid-column: 1/4; */
+  color: white;
+  text-align: center;
+  text-justify: center !important;
+}
+
+/* .footer1 { */
+/* display: grid; */
+/* width: 30%; */
+/* justify-self: center; */
+/* grid-template-columns: 1fr 1fr 1fr; */
+/* grid-template-rows: 1fr 1fr 1fr; */
+/* color: white; */
+/* align-items: center; */
+/* justify-items: center; */
+/* justify-content: center; */
+/* gap: 10px 10px !important; */
+/* color: white; */
+/* } */
+
+/* .footer > * {
+  flex: 1 100%;
+} */
+
+/* .Footericons {
+  color: white;
+  display: flex !important;
+}
+
+.googleicon {
+  grid-row: 1/2;
+  grid-column: 1/2;
+  justify-self: right;
+}
+
+.linkedinicon {
+  grid-row: 1/2;
+  grid-column: 2/3;
+}
+
+.githubicon {
+  grid-row: 1/2;
+  grid-column: 3/4;
+  justify-self: left;
+}
+
+.li1 {
+  display: grid;
+  grid-row: 2/3;
+  grid-column: 1/2;
+}
+.li2 {
+  display: grid;
+  grid-row: 2/3;
+  grid-column: 2/3;
+}
+
+.li3 {
+  display: grid;
+  grid-row: 2/3;
+  grid-column: 3/4;
+} */

@@ -1,0 +1,34 @@
+.Buttonswitch {
+  display: grid;
+  grid-template-columns: 1fr 0.35fr 1fr 1.75fr;
+  grid-template-rows: 1fr;
+}
+
+.form-switch {
+  background-color: #1162b1;
+  grid-column: 2/5 !important;
+  grid-row: 1;
+  border-radius: 5%;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-check-input {
+  width: 140% !important;
+  background-color: #1162b1 !important;
+  height: 25px !important;
+  grid-column: 2/5 !important;
+  margin-top: 10px !important;
+  margin-right: -30px !important;
+}
+
+.Label_toggler {
+  grid-column: 3/5;
+  grid-row: 1/1;
+  align-self: center !important;
+  justify-self: start !important;
+  color: white;
+}
+#Icon_malfunction {
+  color: rgb(201, 149, 26) !important;
+}
