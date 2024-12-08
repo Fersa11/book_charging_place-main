@@ -1,5 +1,5 @@
 import React from "react";
-import "../Features/Switchbutton.css";
+import "./Switchbutton.css";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import HandymanIcon from "@mui/icons-material/Handyman";
