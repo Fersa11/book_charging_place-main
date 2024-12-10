@@ -1,4 +1,3 @@
-// import "./App.css";
 import "./App.css";
 import React from "react";
 import Navigation from "./components/Navigation/Navigation";
@@ -17,6 +16,7 @@ function App() {
       <Body_Header />
       <Routes>
         <Route path="/home" element={<HomePage />} />
+        {/* <Route path="/write" element={<HomePage />} /> */}
       </Routes>
 
       <div className="Appbody">
