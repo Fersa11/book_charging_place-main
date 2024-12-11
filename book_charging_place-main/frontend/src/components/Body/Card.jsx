@@ -60,10 +60,9 @@ function Body(props) {
       showHours: setRemainingHours,
       showMinutes: setRemainingMinutes
     });
-
-    //Update Data
   }
-  // setInterval(handleChangeDuration, 3000);
+
+  //Update Data
   function updataData() {
     const newDocRef = ref(db, `ladestationen/${id}`);
     update(newDocRef, {
@@ -73,7 +72,7 @@ function Body(props) {
       // statusStation: isMalfunction
     });
   }
-
+  setInterval(updataData, 3000);
   function handleBookNow() {
     // const now = new Date().toLocaleTimeString();
     // const currentHours = now.slice(0, 2);
