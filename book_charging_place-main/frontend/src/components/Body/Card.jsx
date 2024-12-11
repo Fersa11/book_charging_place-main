@@ -11,8 +11,8 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 
-import app from "../../utils/firebase";
-import { getDatabase, ref, set, onValue } from "firebase/database";
+import { db } from "../../utils/firebase";
+import { ref, set, onValue, update } from "firebase/database";
 
 function Body(props) {
   const [isChecked, setIsChecked] = useState(false);
@@ -46,31 +46,53 @@ function Body(props) {
       hours: chargingUntil[0],
       minutes: chargingUntil[1]
     });
-  }
 
-  function handleBookNow() {
     const now = new Date().toLocaleTimeString();
     const currentHours = now.slice(0, 2);
     const currentMinutes = now.slice(3, 5);
     const timeInMin = currentHours * 60 + parseInt(currentMinutes);
     const chargingUntilMinutes = setTime.hours * 60 + parseInt(setTime.minutes);
     const remainingTimeMinutes = chargingUntilMinutes - timeInMin;
-    // console.log(remainingTimeMinutes);
-
-    const setHours = Math.floor(remainingTimeMinutes / 60);
-    const setMinutes = remainingTimeMinutes % 60;
+    const setRemainingHours = Math.floor(remainingTimeMinutes / 60);
+    const setRemainingMinutes = remainingTimeMinutes % 60;
 
     setShowRemainingTime({
-      showHours: setHours,
-      showMinutes: setMinutes
+      showHours: setRemainingHours,
+      showMinutes: setRemainingMinutes
     });
 
-    setInterval(setShowRemainingTime, 30000);
+    //Update Data
+  }
+  // setInterval(handleChangeDuration, 3000);
+  function updataData() {
+    const newDocRef = ref(db, `ladestationen/${id}`);
+    update(newDocRef, {
+      // user: inputName,
+      // setTime: setTime,
+      remainingTime: showRemainingTime
+      // statusStation: isMalfunction
+    });
+  }
+
+  function handleBookNow() {
+    // const now = new Date().toLocaleTimeString();
+    // const currentHours = now.slice(0, 2);
+    // const currentMinutes = now.slice(3, 5);
+    // const timeInMin = currentHours * 60 + parseInt(currentMinutes);
+    // const chargingUntilMinutes = setTime.hours * 60 + parseInt(setTime.minutes);
+    // const remainingTimeMinutes = chargingUntilMinutes - timeInMin;
+    // const setRemainingHours = Math.floor(remainingTimeMinutes / 60);
+    // const setRemainingMinutes = remainingTimeMinutes % 60;
+    // setShowRemainingTime({
+    //   showHours: setRemainingHours,
+    //   showMinutes: setRemainingMinutes
+    // });
+    // setInterval(setShowRemainingTime, 30000);
   }
 
   //Save data in DB
   function saveData() {
-    const db = getDatabase(app);
+    // const db = getDatabase(app);
     const newDocRef = ref(db, `ladestationen/${id}`);
 
     set(newDocRef, {
@@ -86,11 +108,12 @@ function Body(props) {
         alert("error: ", error.message);
       });
   }
+
   //Read data from DB
   const hhmm = setTime.hours + ":" + setTime.minutes;
 
   useEffect(() => {
-    const db = getDatabase(app);
+    // const db = getDatabase(app);
     const newDocRef = ref(db, `ladestationen/${id}`);
     onValue(newDocRef, (snapshot) => {
       const data = snapshot.val();
