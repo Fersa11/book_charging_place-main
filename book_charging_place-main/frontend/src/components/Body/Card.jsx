@@ -14,46 +14,45 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { db } from "../../utils/firebase";
 import { ref, set, onValue, update } from "firebase/database";
 
-function Body(props) {
+//---------------------------
+function body() {
   const [isChecked, setIsChecked] = useState(false);
   const [isMalfunction, setMalfunction] = useState(true);
   const [inputName, setInputName] = useState("");
   const id = props.id;
-  //---------------------------
-  function countDownTimer() {
-    const [setTime, setSetTime] = useState(null);
-    const [currentTime, setCurrentTime] = useState(new Date());
-//Dieser Effect wird ausgeführt, wenn die Komponente gemountet und die Zeit sich ändert.
-useEffect(() => {
-const interval = setInterval(() => {
-  //Aktualisiere die Zeit
-  setCurrentTime(new Date());
-}, 5000);
-//Periodische Berechnung
-if (setTime) {
-  const timeDiff = setTime.getTime() - currentTime.getTime();
-  const {hours, minutes} = calculateRemaingTime(timeDiff);
-//Update Firebase Start
 
-//Update Firebase Ende
-}
-}, 5000);
-//Bereinigung von Intervall, wenn die Komponente unmoutet wird
-return () => clearInterval(interval);
-}, [setTime]);
-//Funktion zur Berechnung der verbleibenden Zeit
-const calculateRemaingTime = (difference) => {
-let hours = Math.floor(difference/ (1000*60*60));
-let minutes = Math.floor((difference % (1000 * 60 *60)) / (1000 * 60));
-return {hours, minutes}
-}
-}
+  const [setTime, setSetTime] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  //Dieser Effect wird ausgeführt, wenn die Komponente gemountet und die Zeit sich ändert.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      //Aktualisiere die Zeit
+      setCurrentTime(new Date());
+    }, 5000);
+    //Periodische Berechnung
+    if (setTime) {
+      const timeDiff = setTime.getTime() - currentTime.getTime();
+      const { hours, minutes } = calculateRemaingTime(timeDiff);
+      //Update Firebase Start
+
+      //Update Firebase Ende
+    }
+    // }, 5000);
+    //Bereinigung von Intervall, wenn die Komponente unmoutet wird
+    return () => clearInterval(interval);
+  }, [setTime]);
+  //Funktion zur Berechnung der verbleibenden Zeit
+  const calculateRemaingTime = (difference) => {
+    let hours = Math.floor(difference / (1000 * 60 * 60));
+    let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    return { hours, minutes };
+  };
 
   function handleChangeMalfunc() {
     setMalfunction(!isMalfunction);
     setIsChecked(!isChecked);
   }
- 
+
   //Save data in DB
   function saveData() {
     // const db = getDatabase(app);
@@ -99,7 +98,6 @@ return {hours, minutes}
     });
   }, [id, setShowRemainingTime, setSetTime]);
 
-
   return (
     <div>
       <Card className="Card" style={{ opacity: isMalfunction ? "1" : "0.5" }}>
@@ -119,13 +117,13 @@ return {hours, minutes}
             aria-label="Username"
             className="Formcontrol"
             id="Inputform_name"
-            onChange={(e)=> setInputName(e.target.value)}
+            onChange={(e) => setInputName(e.target.value)}
             value={inputName}
           />
           <InputGroup.Text className="Inputgroupicon" id="Icon_duration">
             <AddAlarmIcon className="Cardbodyicon" />
           </InputGroup.Text>
-{/* Input SetTime */}
+          {/* Input SetTime */}
           <Form.Control
             disabled={!isMalfunction}
             type="time"
@@ -135,7 +133,7 @@ return {hours, minutes}
             aria-label="Duration"
             className="Formcontrol"
             id="Inputform_duration"
-            onChange={(e)  => setSetTime(e.target.value)}
+            onChange={(e) => setSetTime(e.target.value)}
             value={hhmm}
             required
           />
@@ -165,4 +163,4 @@ return {hours, minutes}
   );
 }
 
-export default Body;
+export default body;
