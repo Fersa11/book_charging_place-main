@@ -17,43 +17,81 @@ import { ref, set, onValue, update } from "firebase/database";
 function Body(props) {
   const [isChecked, setIsChecked] = useState(false);
   const [isMalfunction, setMalfunction] = useState(true);
-  const [inputName, setInputName] = useState("");
-  const id = props.id;
-  //---------------------------
-  function countDownTimer() {
-    const [setTime, setSetTime] = useState(null);
-    const [currentTime, setCurrentTime] = useState(new Date());
-//Dieser Effect wird ausgeführt, wenn die Komponente gemountet und die Zeit sich ändert.
-useEffect(() => {
-const interval = setInterval(() => {
-  //Aktualisiere die Zeit
-  setCurrentTime(new Date());
-}, 5000);
-//Periodische Berechnung
-if (setTime) {
-  const timeDiff = setTime.getTime() - currentTime.getTime();
-  const {hours, minutes} = calculateRemaingTime(timeDiff);
-//Update Firebase Start
 
-//Update Firebase Ende
-}
-}, 5000);
-//Bereinigung von Intervall, wenn die Komponente unmoutet wird
-return () => clearInterval(interval);
-}, [setTime]);
-//Funktion zur Berechnung der verbleibenden Zeit
-const calculateRemaingTime = (difference) => {
-let hours = Math.floor(difference/ (1000*60*60));
-let minutes = Math.floor((difference % (1000 * 60 *60)) / (1000 * 60));
-return {hours, minutes}
-}
-}
+  const [setTime, setSetTime] = useState({
+    hours: "",
+    minutes: ""
+  });
+  const [showRemainingTime, setShowRemainingTime] = useState({
+    showHours: "",
+    showMinutes: ""
+  });
+
+  const [inputName, setInputName] = useState("");
+
+  const id = props.id;
+  function handleInputName(event) {
+    setInputName(event.target.value);
+  }
 
   function handleChangeMalfunc() {
     setMalfunction(!isMalfunction);
     setIsChecked(!isChecked);
   }
- 
+
+  function handleChangeDuration(event) {
+    const chargingUntilString = event.target.value;
+    const chargingUntil = chargingUntilString.split(":");
+    setSetTime({
+      hours: chargingUntil[0],
+      minutes: chargingUntil[1]
+    });
+
+    const now = new Date().toLocaleTimeString();
+    const currentHours = now.slice(0, 2);
+    const currentMinutes = now.slice(3, 5);
+    const timeInMin = currentHours * 60 + parseInt(currentMinutes);
+    const chargingUntilMinutes = setTime.hours * 60 + parseInt(setTime.minutes);
+    const remainingTimeMinutes = chargingUntilMinutes - timeInMin;
+    const setRemainingHours = Math.floor(remainingTimeMinutes / 60);
+    const setRemainingMinutes = remainingTimeMinutes % 60;
+
+    setShowRemainingTime({
+      showHours: setRemainingHours,
+      showMinutes: setRemainingMinutes
+    });
+
+    updateData();
+  }
+  //Update Data
+  function updateData() {
+    const newDocRef = ref(db, `ladestationen/${id}`);
+    update(newDocRef, {
+      // user: inputName,
+      // setTime: setTime,
+      remainingTime: showRemainingTime
+      // statusStation: isMalfunction
+    });
+    // clearInterval(interval);
+  }
+  let interval = setInterval(handleChangeDuration, 10000);
+
+  function handleBookNow() {
+    // const now = new Date().toLocaleTimeString();
+    // const currentHours = now.slice(0, 2);
+    // const currentMinutes = now.slice(3, 5);
+    // const timeInMin = currentHours * 60 + parseInt(currentMinutes);
+    // const chargingUntilMinutes = setTime.hours * 60 + parseInt(setTime.minutes);
+    // const remainingTimeMinutes = chargingUntilMinutes - timeInMin;
+    // const setRemainingHours = Math.floor(remainingTimeMinutes / 60);
+    // const setRemainingMinutes = remainingTimeMinutes % 60;
+    // setShowRemainingTime({
+    //   showHours: setRemainingHours,
+    //   showMinutes: setRemainingMinutes
+    // });
+    // setInterval(setShowRemainingTime, 30000);
+  }
+
   //Save data in DB
   function saveData() {
     // const db = getDatabase(app);
@@ -97,9 +135,13 @@ return {hours, minutes}
         showMinutes: showMinutes
       });
     });
-  }, [id, setShowRemainingTime, setSetTime]);
+    // return () => newDocRef.off();
+  }, [id]);
+  // }
 
+  //------------------
 
+  //---------------------
   return (
     <div>
       <Card className="Card" style={{ opacity: isMalfunction ? "1" : "0.5" }}>
@@ -119,13 +161,13 @@ return {hours, minutes}
             aria-label="Username"
             className="Formcontrol"
             id="Inputform_name"
-            onChange={(e)=> setInputName(e.target.value)}
+            onChange={handleInputName}
             value={inputName}
           />
           <InputGroup.Text className="Inputgroupicon" id="Icon_duration">
             <AddAlarmIcon className="Cardbodyicon" />
           </InputGroup.Text>
-{/* Input SetTime */}
+
           <Form.Control
             disabled={!isMalfunction}
             type="time"
@@ -135,14 +177,16 @@ return {hours, minutes}
             aria-label="Duration"
             className="Formcontrol"
             id="Inputform_duration"
-            onChange={(e)  => setSetTime(e.target.value)}
+            onChange={handleChangeDuration}
             value={hhmm}
             required
           />
+
           <Reusablebutton
             type="submit"
             className="Reusablebutton"
             onClick={() => {
+              handleBookNow();
               saveData();
             }}
           >
