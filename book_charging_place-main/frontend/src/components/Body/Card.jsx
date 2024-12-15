@@ -14,90 +14,55 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { db } from "../../utils/firebase";
 import { ref, set, onValue, update } from "firebase/database";
 
-//---------------------------
-function body() {
+function Body(props) {
+  const id = props.id;
   const [isChecked, setIsChecked] = useState(false);
   const [isMalfunction, setMalfunction] = useState(true);
-  const [inputName, setInputName] = useState("");
-  const id = props.id;
 
   const [setTime, setSetTime] = useState(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  //Dieser Effect wird ausgeführt, wenn die Komponente gemountet und die Zeit sich ändert.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      //Aktualisiere die Zeit
-      setCurrentTime(new Date());
-    }, 5000);
-    //Periodische Berechnung
-    if (setTime) {
-      const timeDiff = setTime.getTime() - currentTime.getTime();
-      const { hours, minutes } = calculateRemaingTime(timeDiff);
-      //Update Firebase Start
+  const [showRemainingTime, setShowRemainingTime] = useState({
+    showHours: "",
+    showMinutes: ""
+  });
 
-      //Update Firebase Ende
-    }
-    // }, 5000);
-    //Bereinigung von Intervall, wenn die Komponente unmoutet wird
-    return () => clearInterval(interval);
-  }, [setTime]);
-  //Funktion zur Berechnung der verbleibenden Zeit
-  const calculateRemaingTime = (difference) => {
-    let hours = Math.floor(difference / (1000 * 60 * 60));
-    let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-    return { hours, minutes };
-  };
+  const [inputName, setInputName] = useState("");
 
   function handleChangeMalfunc() {
     setMalfunction(!isMalfunction);
     setIsChecked(!isChecked);
   }
-
-  //Save data in DB
-  function saveData() {
-    // const db = getDatabase(app);
-    const newDocRef = ref(db, `ladestationen/${id}`);
-
-    set(newDocRef, {
-      user: inputName,
-      setTime: setTime,
-      remainingTime: showRemainingTime
-      // statusStation: isMalfunction
-    })
-      .then(() => {
-        alert("Data saved sucessfully");
-      })
-      .catch((error) => {
-        alert("error: ", error.message);
-      });
-  }
-
-  //Read data from DB
-  const hhmm = setTime.hours + ":" + setTime.minutes;
-
   useEffect(() => {
-    // const db = getDatabase(app);
-    const newDocRef = ref(db, `ladestationen/${id}`);
-    onValue(newDocRef, (snapshot) => {
-      const data = snapshot.val();
-      setInputName(data.user || "");
-      const {
-        setTime: { hours, minutes }
-      } = data;
-      const {
-        remainingTime: { showHours, showMinutes }
-      } = data;
-      setSetTime({
-        hours: hours,
-        minutes: minutes
+    const interval = setInterval(() => {
+      const now = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit"
       });
-      setShowRemainingTime({
-        showHours: showHours,
-        showMinutes: showMinutes
-      });
-    });
-  }, [id, setShowRemainingTime, setSetTime]);
 
+      let diffHours = setTime.slice(0, 2) - now.slice(0, 2);
+      if (diffHours < 0) {
+        diffHours += 24;
+      }
+      let diffMinutes = setTime.slice(3, 5) - now.slice(3, 5);
+      if (diffMinutes < 0) {
+        diffMinutes += 60;
+      }
+      console.log(diffMinutes);
+      console.log(diffHours);
+
+      setShowRemainingTime({
+        showHours: diffHours,
+        showMinutes: diffMinutes
+      });
+
+      console.log(inputName);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [setTime, setInputName]);
+  // }
+
+  //------------------
+
+  //---------------------
   return (
     <div>
       <Card className="Card" style={{ opacity: isMalfunction ? "1" : "0.5" }}>
@@ -123,7 +88,7 @@ function body() {
           <InputGroup.Text className="Inputgroupicon" id="Icon_duration">
             <AddAlarmIcon className="Cardbodyicon" />
           </InputGroup.Text>
-          {/* Input SetTime */}
+
           <Form.Control
             disabled={!isMalfunction}
             type="time"
@@ -134,13 +99,15 @@ function body() {
             className="Formcontrol"
             id="Inputform_duration"
             onChange={(e) => setSetTime(e.target.value)}
-            value={hhmm}
+            // value={hhmm}
             required
           />
+
           <Reusablebutton
             type="submit"
             className="Reusablebutton"
             onClick={() => {
+              handleBookNow();
               saveData();
             }}
           >
@@ -163,4 +130,4 @@ function body() {
   );
 }
 
-export default body;
+export default Body;
