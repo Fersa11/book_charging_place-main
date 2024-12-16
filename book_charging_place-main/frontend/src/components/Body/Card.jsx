@@ -19,7 +19,7 @@ function Body(props) {
   const [isChecked, setIsChecked] = useState(false);
   const [isMalfunction, setMalfunction] = useState(true);
 
-  const [setTime, setSetTime] = useState(null);
+  const [setTime, setSetTime] = useState("");
   const [showRemainingTime, setShowRemainingTime] = useState({
     showHours: "",
     showMinutes: ""
@@ -31,45 +31,94 @@ function Body(props) {
     setMalfunction(!isMalfunction);
     setIsChecked(!isChecked);
   }
+
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit"
       });
+      //Calculate difference between now and setTime. Add for hours differnece 24 h, and for minutes difference 60min if diff is negative.
+      let setTimeInMinutes = setTime.slice(3, 5) * 1 + setTime.slice(0, 2) * 60;
+      let nowInMinutes = now.slice(3, 5) * 1 + now.slice(0, 2) * 60;
+      let diffTimeInMinutes = setTimeInMinutes - nowInMinutes;
+      let diffHours = Math.floor(diffTimeInMinutes / 60);
+      let diffMinutes = diffTimeInMinutes % 60;
 
-      let diffHours = setTime.slice(0, 2) - now.slice(0, 2);
       if (diffHours < 0) {
         diffHours += 24;
+      } else {
+        diffHours;
       }
-      let diffMinutes = setTime.slice(3, 5) - now.slice(3, 5);
+      diffMinutes = setTime.slice(3, 5) - now.slice(3, 5);
       if (diffMinutes < 0) {
         diffMinutes += 60;
+      } else {
+        diffMinutes;
       }
-      console.log(diffMinutes);
-      console.log(diffHours);
-
+      if (diffHours === 0 && diffMinutes === 0) {
+        const newDocRef = ref(db, `ladestationen/${id}`);
+        update(newDocRef, {
+          user: "nicht besetzt",
+          setTime: 0,
+          remainingTime: 0
+        });
+      }
       setShowRemainingTime({
         showHours: diffHours,
         showMinutes: diffMinutes
       });
-
-      console.log(inputName);
     }, 5000);
     return () => clearInterval(interval);
-  }, [setTime, setInputName]);
-  // }
+  }, [setTime]);
 
-  //------------------
-
+  // const newDocRef = ref(db, `ladestationen/${id}`);
+  // update(newDocRef, {
+  //   remainingTime: showRemainingTime
+  // })
+  //   .then(() => {
+  //     console.log("Data updated sucessfully");
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+  //Save Data in firebase
+  function saveData() {
+    const newDocRef = ref(db, `ladestationen/${id}`);
+    set(newDocRef, {
+      user: inputName,
+      setTime: setTime,
+      remainingTime: showRemainingTime
+      // statusStation: isMalfunction
+    })
+      .then(() => {
+        alert("Data saved sucessfully");
+      })
+      .catch((error) => {
+        alert("error: ", error.message);
+      });
+  }
   //---------------------
+  //Read data from DB
+  useEffect(() => {
+    const newDocRef = ref(db, `ladestationen/${id}`);
+    onValue(newDocRef, (snapshot) => {
+      const data = snapshot.val();
+      setInputName(data.user || "");
+      setSetTime(data.setTime);
+    });
+    // return () => newDocRef.off();
+  }, [id]);
+
+  //----------------------
   return (
     <div>
       <Card className="Card" style={{ opacity: isMalfunction ? "1" : "0.5" }}>
         <Card.Header className="Cardheader">
           <LocalParkingIcon className="Parkingicon" />
           <span className="Parkingslotname">{props.slotName}</span>
-          <span>{props.id}</span>
+          {/* <span>{props.id}</span> */}
+          <span>{setTime}</span>
         </Card.Header>
         <Card.Body className="Cardbody">
           <InputGroup.Text className="Inputgroupicon" id="Icon_name">
@@ -99,17 +148,14 @@ function Body(props) {
             className="Formcontrol"
             id="Inputform_duration"
             onChange={(e) => setSetTime(e.target.value)}
-            // value={hhmm}
+            value={setTime}
             required
           />
 
           <Reusablebutton
             type="submit"
             className="Reusablebutton"
-            onClick={() => {
-              handleBookNow();
-              saveData();
-            }}
+            onClick={saveData}
           >
             Book now
           </Reusablebutton>
