@@ -17,7 +17,7 @@ import { ref, set, onValue, update } from "firebase/database";
 function Body(props) {
   const id = props.id;
   const [isChecked, setIsChecked] = useState(false);
-  const [isMalfunction, setMalfunction] = useState(true);
+  const [isMalfunction, setMalfunction] = useState(false);
 
   const [setTime, setSetTime] = useState("");
   const [showRemainingTime, setShowRemainingTime] = useState({
@@ -38,6 +38,7 @@ function Body(props) {
         hour: "2-digit",
         minute: "2-digit"
       });
+
       //Calculate difference between now and setTime. Add for hours differnece 24 h, and for minutes difference 60min if diff is negative.
       let setTimeInMinutes = setTime.slice(3, 5) * 1 + setTime.slice(0, 2) * 60;
       let nowInMinutes = now.slice(3, 5) * 1 + now.slice(0, 2) * 60;
@@ -56,12 +57,22 @@ function Body(props) {
       } else {
         diffMinutes;
       }
-      if (diffHours === 0 && diffMinutes === 0) {
+      if ((diffHours === 0 && diffMinutes === 0) || isMalfunction) {
+        setShowRemainingTime(0);
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "nicht besetzt",
           setTime: 0,
-          remainingTime: 0
+          remainingTime: showRemainingTime,
+          malfunction: isMalfunction
+        });
+      } else if (!isMalfunction) {
+        const newDocRef = ref(db, `ladestationen/${id}`);
+        update(newDocRef, {
+          user: inputName,
+          // setTime: setTime,
+          remainingTime: showRemainingTime,
+          malfunction: isMalfunction
         });
       }
       setShowRemainingTime({
@@ -70,7 +81,7 @@ function Body(props) {
       });
     }, 5000);
     return () => clearInterval(interval);
-  }, [setTime]);
+  }, [setTime, showRemainingTime, isMalfunction]);
 
   // const newDocRef = ref(db, `ladestationen/${id}`);
   // update(newDocRef, {
@@ -88,8 +99,8 @@ function Body(props) {
     set(newDocRef, {
       user: inputName,
       setTime: setTime,
-      remainingTime: showRemainingTime
-      // statusStation: isMalfunction
+      remainingTime: showRemainingTime,
+      malfunction: isMalfunction
     })
       .then(() => {
         alert("Data saved sucessfully");
@@ -106,6 +117,8 @@ function Body(props) {
       const data = snapshot.val();
       setInputName(data.user || "");
       setSetTime(data.setTime);
+      setShowRemainingTime(data.remainingTime);
+      setMalfunction(data.malfunction);
     });
     // return () => newDocRef.off();
   }, [id]);
@@ -113,7 +126,7 @@ function Body(props) {
   //----------------------
   return (
     <div>
-      <Card className="Card" style={{ opacity: isMalfunction ? "1" : "0.5" }}>
+      <Card className="Card" style={{ opacity: !isMalfunction ? "1" : "0.5" }}>
         <Card.Header className="Cardheader">
           <LocalParkingIcon className="Parkingicon" />
           <span className="Parkingslotname">{props.slotName}</span>
@@ -125,7 +138,7 @@ function Body(props) {
             <PersonIcon className="Cardbodyicon" />
           </InputGroup.Text>
           <Form.Control
-            disabled={!isMalfunction}
+            disabled={isMalfunction}
             type="text"
             placeholder="Name"
             aria-label="Username"
@@ -139,7 +152,7 @@ function Body(props) {
           </InputGroup.Text>
 
           <Form.Control
-            disabled={!isMalfunction}
+            disabled={isMalfunction}
             type="time"
             // min="07:00"
             // max="21:00"
@@ -168,7 +181,7 @@ function Body(props) {
           </Card.Text>
           <Switchbutton
             getEventFromReusableButton={handleChangeMalfunc}
-            isChecked={isChecked}
+            isChecked={isMalfunction}
           />
         </Card.Body>
       </Card>
