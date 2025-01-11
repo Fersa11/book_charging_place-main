@@ -17,15 +17,16 @@ import { ref, set, onValue, update } from "firebase/database";
 function Body(props) {
   const id = props.id;
   const [isMalfunction, setMalfunction] = useState(false);
-
   const [setTime, setSetTime] = useState("");
   const [showRemainingTime, setShowRemainingTime] = useState({
-    showHours: "",
-    showMinutes: ""
+    showHours: "0",
+    showMinutes: "0"
   });
+  const [readDataDb, setReadDataDb] = useState({
+    remainingTimeDb: "00:00"
+  });
+  const [inputName, setInputName] = useState("Name");
 
-  const [inputName, setInputName] = useState("");
-  const [message, setMessage] = useState("");
   function handleChangeMalfunc() {
     setMalfunction((prevValue) => !prevValue);
   }
@@ -38,7 +39,9 @@ function Body(props) {
       });
 
       //Calculate difference between now and setTime. Add for hours differnece 24 h, and for minutes difference 60min if diff is negative.
-      let setTimeInMinutes = setTime.slice(3, 5) * 1 + setTime.slice(0, 2) * 60;
+      let setTimeInMinutes =
+        setTime.toString().slice(3, 5) * 1 +
+        setTime.toString().slice(0, 2) * 60;
       let nowInMinutes = now.slice(3, 5) * 1 + now.slice(0, 2) * 60;
       let diffTimeInMinutes = setTimeInMinutes - nowInMinutes;
       let diffHours = Math.floor(diffTimeInMinutes / 60);
@@ -55,18 +58,17 @@ function Body(props) {
       } else {
         diffMinutes;
       }
+      const isTimerExpired = diffHours + diffMinutes;
 
-      if (diffHours === 0 && diffMinutes === 0) {
-        setMessage("Available for:");
+      if (isTimerExpired === 0) {
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "",
-          setTime: "",
-          remainingTime: "",
-          malfunction: isMalfunction
+          setTime: "00:00",
+          remainingTime: ""
+          // malfunction: isMalfunction
         });
       } else if (isMalfunction) {
-        // setMessage("Call service");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "",
@@ -75,28 +77,58 @@ function Body(props) {
           malfunction: isMalfunction
         });
         clearInterval(interval);
-      } else {
-        // setMessage("xy");
-        // setMessage("Available for:");
+      } else if (!isMalfunction) {
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
-          // user: inputName,
+          //user: inputName,
           // setTime: setTime,
-          // remainingTime: showRemainingTime,
+          remainingTime: showRemainingTime,
           malfunction: isMalfunction
         });
       }
-      setShowRemainingTime({
-        showHours: diffHours,
-        showMinutes: diffMinutes
-      });
+
+      // setShowRemainingTime((prevValue) => ({
+      //   ...prevValue,
+      //   showHours: diffHours,
+      //   showMinutes: diffMinutes
+      // }));
     }, 5000);
     return () => clearInterval(interval);
   }, [showRemainingTime, isMalfunction]);
 
+  useEffect(() => {
+    const now = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+    //Calculate difference between now and setTime. Add for hours differnece 24 h, and for minutes difference 60min if diff is negative.
+    let setTimeInMinutes =
+      setTime.toString().slice(3, 5) * 1 + setTime.toString().slice(0, 2) * 60;
+    let nowInMinutes = now.slice(3, 5) * 1 + now.slice(0, 2) * 60;
+    let diffTimeInMinutes = setTimeInMinutes - nowInMinutes;
+    let diffHours = Math.floor(diffTimeInMinutes / 60);
+    let diffMinutes = diffTimeInMinutes % 60;
+
+    if (diffHours < 0) {
+      diffHours += 24;
+    } else {
+      diffHours;
+    }
+    diffMinutes = setTime.toString().slice(3, 5) - now.slice(3, 5);
+    if (diffMinutes < 0) {
+      diffMinutes += 60;
+    } else {
+      diffMinutes;
+    }
+    setShowRemainingTime((prevValue) => ({
+      ...prevValue,
+      showHours: diffHours,
+      showMinutes: diffMinutes
+    }));
+  }, [setTime]);
+
   //Save Data in firebase
   function saveData() {
-    setMessage("Approx. Remaining Time:");
     const newDocRef = ref(db, `ladestationen/${id}`);
     set(newDocRef, {
       user: inputName,
@@ -111,6 +143,7 @@ function Body(props) {
         alert("error: ", error.message);
       });
   }
+
   //---------------------
   //Read data from DB
   useEffect(() => {
@@ -118,8 +151,9 @@ function Body(props) {
     onValue(newDocRef, (snapshot) => {
       const data = snapshot.val();
       setInputName(data.user || "");
-      setSetTime(data.setTime);
+      // setSetTime(data.setTime);
       setShowRemainingTime(data.remainingTime);
+      setReadDataDb(data.remainingTime);
       setMalfunction(data.malfunction);
     });
     // return () => newDocRef.off();
@@ -156,18 +190,18 @@ function Body(props) {
           <Form.Control
             disabled={isMalfunction}
             type="time"
-            name="settime"
             // min="07:00"
-            // max="10:00"
+            // max="21:00"
             placeholder="Duration (h)"
+            name="setTimeH"
             aria-label="Duration"
             className="Formcontrol"
             id="Inputform_duration"
             onChange={(e) => setSetTime(e.target.value)}
-            // onChange={handleSetTime}
             value={setTime}
             required
           />
+
           <Reusablebutton
             type="submit"
             className="Reusablebutton"
@@ -177,11 +211,11 @@ function Body(props) {
           </Reusablebutton>
 
           <Card.Text className="Label_remainingtime">
-            {/* Approx. Remaining Time: */}
-            {message}
+            Approx. Remaining Time:
           </Card.Text>
           <Card.Text className="Remainingtime">
-            {showRemainingTime.showHours} h {showRemainingTime.showMinutes} min.
+            {/* {showRemainingTime.showHours} h {showRemainingTime.showMinutes} min.{" "} */}
+            {readDataDb.showHours} h {readDataDb.showMinutes} min.
           </Card.Text>
           <Switchbutton
             getEventFromReusableButton={handleChangeMalfunc}
