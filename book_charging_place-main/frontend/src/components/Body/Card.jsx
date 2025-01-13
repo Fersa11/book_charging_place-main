@@ -44,6 +44,14 @@ function Body(props) {
       let diffHours = Math.floor(diffTimeInMinutes / 60);
       let diffMinutes = diffTimeInMinutes % 60;
 
+      // const initialsetTimeHours = Math.floor((nowInMinutes + 240) / 60);
+      // const initialsetTimeMinutes = (nowInMinutes + 240) % 60;
+      // console.log(initialsetTimeHours + ":" + initialsetTimeMinutes);
+      // console.log(typeof initialsetTimeHours);
+      // const initialsetTime =
+      //   initialsetTimeHours.toString() + ":" + initialsetTimeMinutes.toString();
+      // setSetTime(initialsetTime);
+
       if (diffHours < 0) {
         diffHours += 24;
       } else {
@@ -56,7 +64,7 @@ function Body(props) {
         diffMinutes;
       }
 
-      if (diffHours === 0 && diffMinutes === 0) {
+      if ((diffHours === 0 && diffMinutes === 0) || setTime < now) {
         setMessage("Available for:");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
@@ -74,7 +82,22 @@ function Body(props) {
           remainingTime: "",
           malfunction: isMalfunction
         });
-        clearInterval(interval);
+      } else if (setTime < now) {
+        setMessage("Available for:");
+        const newDocRef = ref(db, `ladestationen/${id}`);
+        update(newDocRef, {
+          user: "",
+          setTime: "",
+          remainingTime: "",
+          malfunction: isMalfunction
+        });
+        // .then(() => {
+        //   alert("Set time must be greater than the current time");
+        // })
+        // .catch((error) => {
+        //   alert("error: ", error.message);
+        // });
+        console.log("set time should greater than current time");
       } else {
         // setMessage("xy");
         // setMessage("Available for:");
@@ -90,7 +113,7 @@ function Body(props) {
         showHours: diffHours,
         showMinutes: diffMinutes
       });
-    }, 5000);
+    }, 3000);
     return () => clearInterval(interval);
   }, [showRemainingTime, isMalfunction]);
 
