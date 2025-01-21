@@ -40,7 +40,7 @@ function Body(props) {
       const data = snapshot.val();
       setInputName(data.user || "");
       setSetTime(data.setTime);
-      setShowRemainingTime(data.remainingTime);
+      // setShowRemainingTime(data.remainingTime);
       setMalfunction(data.malfunction);
       setIsBooked(data.booked);
     });
@@ -53,6 +53,10 @@ function Body(props) {
         hour: "2-digit",
         minute: "2-digit"
       });
+      console.log("setTime " + setTime + " " + props.id);
+      // console.log(showRemainingTime);
+      // console.log("now " + now);
+      console.log(isBooked + " " + props.id);
 
       //Calculate difference between now and setTime. Add for hours differnece 24 h, and for minutes difference 60min if diff is negative.
       let setTimeInMinutes = setTime.slice(3, 5) * 1 + setTime.slice(0, 2) * 60;
@@ -129,7 +133,7 @@ function Body(props) {
         showHours: diffHours,
         showMinutes: diffMinutes
       }));
-    }, 3000);
+    }, 1000);
     return () => clearInterval(interval);
   }, [showRemainingTime, isMalfunction, isBooked]);
 
@@ -174,7 +178,9 @@ function Body(props) {
           </InputGroup.Text>
           <Form.Control
             disabled={isMalfunction || isBooked}
+            // autoComplete="true"
             type="text"
+            name="name"
             placeholder="Name"
             aria-label="Username"
             className="Formcontrol"
@@ -211,6 +217,7 @@ function Body(props) {
             SwitchName="Book Now"
             Icon=<ElectricCarIcon color="red" />
             isCheckedBooked={isBooked}
+            key={props.id}
             // className="Reusablebutton"
           />
           <Card.Text className="Label_remainingtime">{message}</Card.Text>
