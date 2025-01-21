@@ -16,7 +16,7 @@ function App() {
       <Body_Header />
       <Routes>
         <Route path="/home" element={<HomePage />} />
-        <Route path="/clock" element={<Clock />} />
+        {/* <Route path="/clock" element={<Clock />} /> */}
       </Routes>
 
       <div className="Appbody"></div>
