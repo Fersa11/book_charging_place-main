@@ -10,9 +10,8 @@
   background-color: #1162b1;
   grid-column: 2/5 !important;
   grid-row: 1;
-  border-radius: 5%;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-top-right-radius: 5% !important;
+  border-bottom-right-radius: 5% !important;
 }
 
 .form-check-input {
@@ -22,6 +21,7 @@
   grid-column: 2/5 !important;
   margin-top: 10px !important;
   margin-right: -30px !important;
+  border-color: rgb(0, 110, 255) !important;
 }
 
 .Label_toggler {
@@ -31,6 +31,7 @@
   justify-self: start !important;
   color: white;
 }
-/* #Icon_malfunction {
-  /* color: rgb(201, 149, 26) !important; */
-} */
+#Inputgroupicon {
+  border-top-left-radius: 5% !important;
+  border-bottom-left-radius: 5% !important;
+}

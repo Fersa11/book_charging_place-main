@@ -4,14 +4,14 @@
   background-color: #343a40 !important;
   background-image: url("https://www.transparenttextures.com/patterns/ps-neutral.png");
   margin: 30px;
-  border-radius: 4%;
+  border-radius: 4% !important;
 }
 
 .Cardheader {
   display: flex;
   align-items: center;
   justify-content: left;
-  border-color: white !important;
+  border-bottom-color: white !important;
 }
 
 .Parkingicon {
@@ -77,6 +77,8 @@
   grid-row: 2/3;
   -webkit-text-fill-color: white;
   z-index: 0;
+  border-top-right-radius: 5% !important;
+  border-bottom-right-radius: 5% !important;
 }
 
 input[type="time"]::-webkit-calendar-picker-indicator {
