@@ -17,7 +17,7 @@ import { ref, set, onValue } from "firebase/database";
 
 //---------------------------
 function body(props) {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isCheckedMalfunction, setisCheckedMalfunction] = useState(false);
   const [isMalfunction, setMalfunction] = useState(true);
   const [inputName, setInputName] = useState("");
   const id = props.id;
@@ -81,7 +81,7 @@ function body(props) {
 
   function handleChangeMalfunc() {
     setMalfunction(!isMalfunction);
-    setIsChecked(!isChecked);
+    setisCheckedMalfunction(!isCheckedMalfunction);
   }
 
   //Save data in DB
@@ -186,7 +186,7 @@ function body(props) {
           </Card.Text>
           <Switchbutton
             getEventFromReusableButton={handleChangeMalfunc}
-            isChecked={isChecked}
+            isCheckedMalfunction={isCheckedMalfunction}
           />
         </Card.Body>
       </Card>

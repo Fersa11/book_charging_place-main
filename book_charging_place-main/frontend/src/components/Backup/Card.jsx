@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Card.css";
-import Reusablebutton from "../../Features/Reusablebutton";
-import Switchbutton from "../../Features/Switchbutton";
+// import Reusablebutton from "../../Features/Reusablebutton";
+import Switchbutton from "../../Features/SwitchbuttonMalfunction";
 
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import PersonIcon from "@mui/icons-material/Person";
@@ -219,7 +219,7 @@ function Body(props) {
           </Card.Text>
           <Switchbutton
             getEventFromReusableButton={handleChangeMalfunc}
-            isChecked={isMalfunction}
+            isCheckedMalfunction={isMalfunction}
           />
         </Card.Body>
       </Card>

@@ -149,22 +149,22 @@
 
 .clock .hand.second {
   width: 1px;
-  height: 45%;
-  bottom: 60%;
+  height: 48%;
+  bottom: 50%;
   left: 50%;
   background-color: #0dcaf0;
   transform: rotate(360deg);
 }
 .clock .hand.minute {
-  width: 3.5px;
+  width: 3px;
   height: 35%;
   bottom: 50%;
-  left: 49%;
+  left: 50%;
   background-color: white;
   border: 1px solid #a3a6b2;
 }
 .clock .hand.hour {
-  width: 5px;
+  width: 4px;
   height: 30%;
   bottom: 50%;
   left: 50%;

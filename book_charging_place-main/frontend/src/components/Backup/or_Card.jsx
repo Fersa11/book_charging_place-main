@@ -15,7 +15,7 @@ import { db } from "../../utils/firebase";
 import { ref, set, onValue, update } from "firebase/database";
 
 function Body(props) {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isCheckedMalfunction, setisCheckedMalfunction] = useState(false);
   const [isMalfunction, setMalfunction] = useState(true);
 
   const [setTime, setSetTime] = useState({
@@ -36,7 +36,7 @@ function Body(props) {
 
   function handleChangeMalfunc() {
     setMalfunction(!isMalfunction);
-    setIsChecked(!isChecked);
+    setisCheckedMalfunction(!isCheckedMalfunction);
   }
 
   function handleChangeDuration(event) {
@@ -201,7 +201,7 @@ function Body(props) {
           </Card.Text>
           <Switchbutton
             getEventFromReusableButton={handleChangeMalfunc}
-            isChecked={isChecked}
+            isCheckedMalfunction={isCheckedMalfunction}
           />
         </Card.Body>
       </Card>

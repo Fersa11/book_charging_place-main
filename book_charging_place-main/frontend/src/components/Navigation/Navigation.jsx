@@ -15,7 +15,7 @@ function Navigation() {
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav variant="pills" defaultActiveKey="/home" className="mr-auto">
           <Nav.Link href="/home">Home</Nav.Link>
-          <Nav.Link eventKey="link-2">Option</Nav.Link>
+          {/* <Nav.Link href="/clock">Option</Nav.Link> */}
         </Nav>
       </Navbar.Collapse>
       <Container className="d-none d-md-block">

@@ -1,9 +1,11 @@
 .Buttonswitch {
   display: grid;
-  grid-template-columns: 1fr 0.35fr 1fr 1.75fr;
-  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 0.5fr 1fr 1.75fr;
+  /* grid-template-rows: 2fr; */
 }
-
+/* #IdBookNow {
+  grid-template-columns: 1fr 0.5fr 1fr 1.75fr;
+} */
 .form-switch {
   background-color: #1162b1;
   grid-column: 2/5 !important;
@@ -29,6 +31,6 @@
   justify-self: start !important;
   color: white;
 }
-#Icon_malfunction {
-  color: rgb(201, 149, 26) !important;
-}
+/* #Icon_malfunction {
+  /* color: rgb(201, 149, 26) !important; */
+} */

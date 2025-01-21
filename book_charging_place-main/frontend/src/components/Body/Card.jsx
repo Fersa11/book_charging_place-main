@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import "./Card.css";
-import Reusablebutton from "../../Features/Reusablebutton";
-import Switchbutton from "../../Features/Switchbutton";
+import SwitchbuttonMalfunction from "../../Features/SwitchbuttonMalfunction";
+import SwitchbuttonBooked from "../../Features/SwitchbuttonBooked";
 
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import PersonIcon from "@mui/icons-material/Person";
 import AddAlarmIcon from "@mui/icons-material/AddAlarm";
+import HandymanIcon from "@mui/icons-material/Handyman";
+import ElectricCarIcon from "@mui/icons-material/ElectricCar";
 
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -17,18 +19,33 @@ import { ref, set, onValue, update } from "firebase/database";
 function Body(props) {
   const id = props.id;
   const [isMalfunction, setMalfunction] = useState(false);
+  const [isBooked, setIsBooked] = useState(false);
 
   const [setTime, setSetTime] = useState("");
   const [showRemainingTime, setShowRemainingTime] = useState({
-    showHours: "",
-    showMinutes: ""
+    showHours: 0,
+    showMinutes: 0
   });
 
   const [inputName, setInputName] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("Available for:");
   function handleChangeMalfunc() {
     setMalfunction((prevValue) => !prevValue);
   }
+
+  //Read data from DB
+  useEffect(() => {
+    const newDocRef = ref(db, `ladestationen/${id}`);
+    onValue(newDocRef, (snapshot) => {
+      const data = snapshot.val();
+      setInputName(data.user || "");
+      setSetTime(data.setTime);
+      setShowRemainingTime(data.remainingTime);
+      setMalfunction(data.malfunction);
+      setIsBooked(data.booked);
+    });
+    // return () => newDocRef.off();
+  }, [id]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -44,14 +61,6 @@ function Body(props) {
       let diffHours = Math.floor(diffTimeInMinutes / 60);
       let diffMinutes = diffTimeInMinutes % 60;
 
-      // const initialsetTimeHours = Math.floor((nowInMinutes + 240) / 60);
-      // const initialsetTimeMinutes = (nowInMinutes + 240) % 60;
-      // console.log(initialsetTimeHours + ":" + initialsetTimeMinutes);
-      // console.log(typeof initialsetTimeHours);
-      // const initialsetTime =
-      //   initialsetTimeHours.toString() + ":" + initialsetTimeMinutes.toString();
-      // setSetTime(initialsetTime);
-
       if (diffHours < 0) {
         diffHours += 24;
       } else {
@@ -64,22 +73,35 @@ function Body(props) {
         diffMinutes;
       }
 
-      if ((diffHours === 0 && diffMinutes === 0) || setTime < now) {
+      if (isBooked === false) {
         setMessage("Available for:");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "",
           setTime: "",
           remainingTime: "",
+          // booked: !isBooked,
           malfunction: isMalfunction
         });
-      } else if (isMalfunction) {
-        // setMessage("Call service");
+      } else if (diffHours === 0 && diffMinutes === 0) {
+        // setIsBooked(false);
+        setMessage("Available for:");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "",
           setTime: "",
           remainingTime: "",
+          booked: !isBooked
+          // malfunction: isMalfunction
+        });
+      } else if (isMalfunction) {
+        setMessage("Call service");
+        const newDocRef = ref(db, `ladestationen/${id}`);
+        update(newDocRef, {
+          user: "",
+          setTime: "",
+          remainingTime: "",
+          // booked: isBooked,
           malfunction: isMalfunction
         });
       } else if (setTime < now) {
@@ -89,64 +111,52 @@ function Body(props) {
           user: "",
           setTime: "",
           remainingTime: "",
-          malfunction: isMalfunction
+          // malfunction: isMalfunction
+          booked: !isBooked
         });
-        // .then(() => {
-        //   alert("Set time must be greater than the current time");
-        // })
-        // .catch((error) => {
-        //   alert("error: ", error.message);
-        // });
-        console.log("set time should greater than current time");
       } else {
-        // setMessage("xy");
-        // setMessage("Available for:");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           // user: inputName,
           // setTime: setTime,
-          // remainingTime: showRemainingTime,
-          malfunction: isMalfunction
+          remainingTime: showRemainingTime
+          // booked: isBooked,
+          // malfunction: isMalfunction
         });
       }
-      setShowRemainingTime({
+      setShowRemainingTime((prevValue) => ({
+        ...prevValue,
         showHours: diffHours,
         showMinutes: diffMinutes
-      });
+      }));
     }, 3000);
     return () => clearInterval(interval);
-  }, [showRemainingTime, isMalfunction]);
+  }, [showRemainingTime, isMalfunction, isBooked]);
 
-  //Save Data in firebase
-  function saveData() {
+  //***Save Data in firebase***
+  function handleBookNow(event) {
+    setIsBooked(event.target.checked);
+
     setMessage("Approx. Remaining Time:");
     const newDocRef = ref(db, `ladestationen/${id}`);
     set(newDocRef, {
       user: inputName,
       setTime: setTime,
       remainingTime: showRemainingTime,
+      booked: !isBooked,
       malfunction: isMalfunction
     })
       .then(() => {
-        alert("Data saved sucessfully");
+        if (isBooked === false) {
+          alert("Data saved sucessfully");
+        }
       })
       .catch((error) => {
         alert("error: ", error.message);
       });
+    // }
   }
   //---------------------
-  //Read data from DB
-  useEffect(() => {
-    const newDocRef = ref(db, `ladestationen/${id}`);
-    onValue(newDocRef, (snapshot) => {
-      const data = snapshot.val();
-      setInputName(data.user || "");
-      setSetTime(data.setTime);
-      setShowRemainingTime(data.remainingTime);
-      setMalfunction(data.malfunction);
-    });
-    // return () => newDocRef.off();
-  }, [id]);
 
   //----------------------
   return (
@@ -156,14 +166,14 @@ function Body(props) {
           <LocalParkingIcon className="Parkingicon" />
           <span className="Parkingslotname">{props.slotName}</span>
           {/* <span>{props.id}</span> */}
-          <span>{setTime}</span>
+          {/* <span>{setTime}</span> */}
         </Card.Header>
         <Card.Body className="Cardbody">
           <InputGroup.Text className="Inputgroupicon" id="Icon_name">
             <PersonIcon className="Cardbodyicon" />
           </InputGroup.Text>
           <Form.Control
-            disabled={isMalfunction}
+            disabled={isMalfunction || isBooked}
             type="text"
             placeholder="Name"
             aria-label="Username"
@@ -177,7 +187,7 @@ function Body(props) {
           </InputGroup.Text>
 
           <Form.Control
-            disabled={isMalfunction}
+            disabled={isMalfunction || isBooked}
             type="time"
             name="settime"
             // min="07:00"
@@ -191,24 +201,28 @@ function Body(props) {
             value={setTime}
             required
           />
-          <Reusablebutton
-            type="submit"
-            className="Reusablebutton"
-            onClick={saveData}
-          >
-            Book now
-          </Reusablebutton>
-
-          <Card.Text className="Label_remainingtime">
-            {/* Approx. Remaining Time: */}
-            {message}
-          </Card.Text>
+          <SwitchbuttonBooked
+            // getEvent={}
+            // isCheckedMalfunction={}
+            name="BookNow"
+            getEvent={handleBookNow}
+            SwitchId="IdBookNow"
+            SwitchClass="Buttonswitch"
+            SwitchName="Book Now"
+            Icon=<ElectricCarIcon color="red" />
+            isCheckedBooked={isBooked}
+            // className="Reusablebutton"
+          />
+          <Card.Text className="Label_remainingtime">{message}</Card.Text>
           <Card.Text className="Remainingtime">
             {showRemainingTime.showHours} h {showRemainingTime.showMinutes} min.
           </Card.Text>
-          <Switchbutton
-            getEventFromReusableButton={handleChangeMalfunc}
-            isChecked={isMalfunction}
+          <SwitchbuttonMalfunction
+            SwitchId="IdMalfunction"
+            getEvent={handleChangeMalfunc}
+            isCheckedMalfunction={isMalfunction}
+            SwitchName="Malfunction"
+            Icon=<HandymanIcon />
           />
         </Card.Body>
       </Card>

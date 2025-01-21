@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 
 import "./Clock.css";
@@ -13,28 +13,52 @@ import "./Clock.css";
 
 // setClock = () =>
 //   const currentDate = new Date();
-// let secondRatio = currentDate.getSeconds() /60;
-// let minuteRatio = (secondRatio + currentDate.getMinutes()) /60;
-// let hourRatio = (minuteRatio+currentDate.getHours()) /12;
 
-function Clock({ hourRatio, minuteRatio, secondRatio }) {
-  // console.log(100);
+// let minuteRatio = (secondRatio + minutes) / 60;
+// let hourRatio = (minuteRatio + hours) / 12;
+function clock() {
+  const [ratio, setRatio] = useState({
+    second: "",
+    minute: "",
+    hour: ""
+  });
+  useEffect(() => {
+    // function moveClock({ hourRatio, minuteRatio, secondRatio }) {
+    const interval = setInterval(() => {
+      const now = new Date();
+      let secondRatio = now.getSeconds() / 60;
+      let minuteRatio = (secondRatio + now.getMinutes()) / 60;
+      let hourRatio = (minuteRatio + now.getHours()) / 12;
+      // console.log(secondRatio);
 
+      setRatio((prevValue) => ({
+        ...prevValue,
+        second: secondRatio,
+        minute: minuteRatio,
+        hour: hourRatio
+      }));
+      // console.log(ratio.second);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="clock">
       <div
         className="hand hour"
-        style={{ transform: `translate(-50%) rotate(${hourRatio * 360}deg)` }}
+        style={{ transform: `translate(-50%) rotate(${ratio.hour * 360}deg)` }}
       ></div>
       <div
         className="hand minute"
-        style={{ transform: `translate(-50%) rotate(${minuteRatio * 360}deg)` }}
+        style={{
+          transform: `translate(-50%) rotate(${ratio.minute * 360}deg)`
+        }}
       ></div>
       <div
         className="hand second"
-        style={{ transform: `translate(-50%) rotate(${secondRatio * 360}deg)` }}
+        style={{
+          transform: `translate(-50%) rotate(${ratio.second * 360}deg)`
+        }}
       ></div>
-
       <div className="number number1">
         <div>1</div>
       </div>
@@ -75,4 +99,4 @@ function Clock({ hourRatio, minuteRatio, secondRatio }) {
   );
 }
 
-export default Clock;
+export default clock;

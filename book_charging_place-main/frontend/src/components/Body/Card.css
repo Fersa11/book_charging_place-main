@@ -76,7 +76,7 @@
 #Inputform_duration {
   grid-row: 2/3;
   -webkit-text-fill-color: white;
-  z-index: 2;
+  z-index: 0;
 }
 
 input[type="time"]::-webkit-calendar-picker-indicator {
@@ -110,8 +110,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   /* align-self: center;
   justify-self: start; */
 }
-
-.Buttonswitch {
+#IdBookNow {
+  grid-column: 1/5 !important;
+  grid-row: 3/4;
+}
+#IdMalfunction {
   grid-column: 1/5 !important;
   grid-row: 6/7;
 }
