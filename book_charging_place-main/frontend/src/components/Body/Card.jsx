@@ -17,6 +17,13 @@ import { db } from "../../utils/firebase";
 import { ref, set, onValue, update } from "firebase/database";
 
 function Body(props) {
+  const [cardData, setCardData] = {
+    nameCard: "",
+    setTimeCard: "",
+    remainingTimeCard: "",
+    bookCard: "",
+    malfunctionCard: ""
+  };
   const id = props.id;
   const [isMalfunction, setMalfunction] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
@@ -53,10 +60,10 @@ function Body(props) {
         hour: "2-digit",
         minute: "2-digit"
       });
-      console.log("setTime " + setTime + " " + props.id);
+      // console.log("setTime " + setTime + " " + props.id);
       // console.log(showRemainingTime);
       // console.log("now " + now);
-      console.log(isBooked + " " + props.id);
+      // console.log(isBooked + " " + props.id);
 
       //Calculate difference between now and setTime. Add for hours differnece 24 h, and for minutes difference 60min if diff is negative.
       let setTimeInMinutes = setTime.slice(3, 5) * 1 + setTime.slice(0, 2) * 60;
@@ -99,13 +106,13 @@ function Body(props) {
           // malfunction: isMalfunction
         });
       } else if (isMalfunction) {
-        setMessage("Call service");
+        // setMessage("Call service");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "",
           setTime: "",
           remainingTime: "",
-          // booked: isBooked,
+          booked: !isBooked,
           malfunction: isMalfunction
         });
       } else if (setTime < now) {
