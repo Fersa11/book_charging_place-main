@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Card.css";
-import SwitchbuttonMalfunction from "../../Features/SwitchbuttonMalfunction";
-import SwitchbuttonBooked from "../../Features/SwitchbuttonBooked";
+import SwitchbuttonMalfunction from "../src/Features/SwitchbuttonMalfunction";
+import SwitchbuttonBooked from "../src/Features/SwitchbuttonBooked";
 
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import PersonIcon from "@mui/icons-material/Person";
@@ -13,7 +13,7 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 
-import { db } from "../../utils/firebase";
+import { db } from "../src/utils/firebase";
 import { ref, set, onValue, update } from "firebase/database";
 
 function Body(props) {
@@ -23,12 +23,12 @@ function Body(props) {
 
   const [setTime, setSetTime] = useState("");
   const [showRemainingTime, setShowRemainingTime] = useState({
-    showHours: "",
-    showMinutes: ""
+    showHours: 0,
+    showMinutes: 0
   });
 
   const [inputName, setInputName] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("Available for:");
   function handleChangeMalfunc() {
     setMalfunction((prevValue) => !prevValue);
   }
@@ -41,7 +41,6 @@ function Body(props) {
       setInputName(data.user || "");
       setSetTime(data.setTime);
       // setShowRemainingTime(data.remainingTime);
-      setMessage(data.message);
       setMalfunction(data.malfunction);
       setIsBooked(data.booked);
     });
@@ -50,20 +49,22 @@ function Body(props) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = new Date().toLocaleString([], {
+      const now = new Date().toLocaleTimeString([], {
         hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
+        minute: "2-digit"
       });
+      // console.log("setTime " + setTime + " " + props.id);
+      // console.log(showRemainingTime);
+      // console.log("now " + now);
+      // console.log(isBooked + " " + props.id);
 
       //Calculate difference between now and setTime. Add for hours differnece 24 h, and for minutes difference 60min if diff is negative.
       let setTimeInMinutes = setTime.slice(3, 5) * 1 + setTime.slice(0, 2) * 60;
-      let nowInMinutes =
-        parseInt(now.split(":")[0]) * 60 + parseInt(now.split(":")[1]);
+      let nowInMinutes = now.slice(3, 5) * 1 + now.slice(0, 2) * 60;
       let diffTimeInMinutes = setTimeInMinutes - nowInMinutes;
       let diffHours = Math.floor(diffTimeInMinutes / 60);
       let diffMinutes = diffTimeInMinutes % 60;
-      //Is settime bigger than now
+
       if (diffHours < 0) {
         diffHours += 24;
       } else {
@@ -76,34 +77,35 @@ function Body(props) {
         diffMinutes;
       }
 
-      if (isMalfunction === true) {
-        setIsBooked(false);
+      if (isBooked === false) {
+        setMessage("Available for:");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "",
           setTime: "",
-          // remainingTime: "",
-          message: "Call service",
-          booked: isBooked,
+          remainingTime: "",
+          // booked: !isBooked,
           malfunction: isMalfunction
         });
       } else if (diffHours === 0 && diffMinutes === 0) {
+        // setIsBooked(false);
+        setMessage("Available for:");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "",
           setTime: "",
-          message: "Available for:",
+          remainingTime: "",
           booked: !isBooked
+          // malfunction: isMalfunction
         });
-      } else if (isBooked === false && isMalfunction === false) {
-        // setMessage("Available for:");
+      } else if (isMalfunction) {
+        // setMessage("Call service");
         const newDocRef = ref(db, `ladestationen/${id}`);
         update(newDocRef, {
           user: "",
           setTime: "",
-          message: "Available for:",
-          // remainingTime: "",
-          // booked: !isBooked,
+          remainingTime: "",
+          booked: !isBooked,
           malfunction: isMalfunction
         });
       } else if (setTime < now) {
@@ -121,7 +123,7 @@ function Body(props) {
         update(newDocRef, {
           // user: inputName,
           // setTime: setTime,
-          // remainingTime: showRemainingTime
+          remainingTime: showRemainingTime
           // booked: isBooked,
           // malfunction: isMalfunction
         });
@@ -138,14 +140,14 @@ function Body(props) {
   //***Save Data in firebase***
   function handleBookNow(event) {
     setIsBooked(event.target.checked);
-    // setMessage("Approx. Remaining Time:");
+
+    setMessage("Approx. Remaining Time:");
     const newDocRef = ref(db, `ladestationen/${id}`);
     set(newDocRef, {
       user: inputName,
       setTime: setTime,
-      // remainingTime: showRemainingTime,
+      remainingTime: showRemainingTime,
       booked: !isBooked,
-      message: "Approx. Remaining Time:",
       malfunction: isMalfunction
     })
       .then(() => {
@@ -158,7 +160,9 @@ function Body(props) {
       });
     // }
   }
+  //---------------------
 
+  //----------------------
   return (
     <div>
       <Card className="Card" style={{ opacity: !isMalfunction ? "1" : "0.5" }}>
@@ -192,6 +196,8 @@ function Body(props) {
             disabled={isMalfunction || isBooked}
             type="time"
             name="settime"
+            // min="07:00"
+            // max="10:00"
             placeholder="Duration (h)"
             aria-label="Duration"
             className="Formcontrol"
@@ -212,7 +218,6 @@ function Body(props) {
             Icon=<ElectricCarIcon color="red" />
             isCheckedBooked={isBooked}
             key={props.id}
-            type="submit"
             // className="Reusablebutton"
           />
           <Card.Text className="Label_remainingtime">{message}</Card.Text>
