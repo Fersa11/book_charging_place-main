@@ -19,7 +19,7 @@ function App() {
         {/* <Route path="/clock" element={<Clock />} /> */}
       </Routes>
 
-      <div className="Appbody"></div>
+      {/* <div className="Appbody"></div> */}
 
       {/* <div className="Appfooter"> */}
       <Footer />

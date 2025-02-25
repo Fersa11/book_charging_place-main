@@ -11,7 +11,9 @@ function Navigation() {
   return (
     <Navbar collapseOnSelect expand="md" variant="dark">
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-      <Navbar.Brand href="#home">Booking of Charging Stations </Navbar.Brand>
+      <Navbar.Brand className="navbarbrand" href="#home">
+        Booking of Charging Stations{" "}
+      </Navbar.Brand>
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav variant="pills" defaultActiveKey="/home" className="mr-auto">
           <Nav.Link href="/home">Home</Nav.Link>

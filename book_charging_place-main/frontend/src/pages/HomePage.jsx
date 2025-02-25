@@ -4,7 +4,7 @@ import Card from "../components/Body/Card.jsx";
 
 function HomePage() {
   return (
-    <div className="Appbody">
+    <div className="appbody">
       <Card slotName="5A" id="5A" name="5A" />
       <Card slotName="5B" id="5B" name="5B" />
       <Card slotName="6A" id="6A" name="6A" />

@@ -34,7 +34,7 @@ button.navbar-toggler {
   grid-template-columns: 0.25fr 0.25fr 1fr;
   grid-template-rows: 1fr 1fr;
   width: 300px !important;
-  height: 120px;
+  height: 120px !important;
 }
 
 .weekday {

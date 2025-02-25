@@ -4,15 +4,15 @@
   font-style: normal;
 }
 
-.Appall {
+/* .Appall {
   min-height: 100% !important;
   display: flex;
   flex-direction: column;
-}
+} */
 
-.Appbody {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: center;
+@media only screen and (min-width: 146px) and (max-width: 800px) {
+  .navbar-brand {
+    /* background-color: green !important; */
+    visibility: hidden;
+  }
 }

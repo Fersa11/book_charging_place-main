@@ -1,18 +1,7 @@
-#root {
-  font-family: "Alatsi", serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.Appall {
-  min-height: 100% !important;
-  display: flex;
-  flex-direction: column;
-}
-
-.Appbody {
+.appbody {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
+  flex-direction: row;
 }
